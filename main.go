@@ -27,7 +27,7 @@ func main() {
 	}
 
 	// Préparer la commande avec cmd /c start
-	cmd := exec.Command("cmd", append([]string{"/c", "start", "/wait", program}, args...)...)
+	cmd := exec.Command("cmd", append([]string{"/c", program}, args...)...)
 
 	// Rediriger la sortie standard et la sortie d'erreur vers la console
 	cmd.Stdout = os.Stdout
