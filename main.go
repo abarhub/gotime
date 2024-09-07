@@ -15,9 +15,9 @@ func main() {
 
 	var program string
 	var args []string
+	var exitCode int
 
 	if len(argsCmd) > 1 {
-		//fmt.Println("Premier argument utilisateur :", argsCmd[1])
 		program = argsCmd[1]
 		if len(argsCmd) > 2 {
 			args = argsCmd[2:]
@@ -25,12 +25,6 @@ func main() {
 	} else {
 		log.Fatalf("Aucun argument utilisateur fourni.")
 	}
-
-	// Le programme que tu veux exécuter
-	//program := "notepad.exe"
-
-	// Les paramètres à passer au programme (par exemple, ouvrir un fichier)
-	//args := []string{"example.txt"}
 
 	// Préparer la commande avec cmd /c start
 	cmd := exec.Command("cmd", append([]string{"/c", "start", "/wait", program}, args...)...)
@@ -48,20 +42,27 @@ func main() {
 		log.Fatalf("Erreur lors de l'exécution de la commande: %v", err)
 	}
 
-	//fmt.Println("Le programme a été lancé. En attente de la fin du programme...")
-
 	// Attendre la fin du programme
 	err = cmd.Wait()
 	// Capture le temps de fin
 	endTime := time.Now()
 	if err != nil {
-		log.Fatalf("Erreur lors de l'attente de la commande: %v", err)
+
+		// Si une erreur survient, obtenir le code de retour
+		exitError, ok := err.(*exec.ExitError)
+		if ok {
+			// Récupérer le code de retour du processus
+			exitCode = exitError.ExitCode()
+		} else {
+			// Autre erreur
+			log.Fatalf("Erreur lors de l'attente de la commande : %v", err)
+		}
+
 	}
 
-	//fmt.Println("Le programme s'est terminé.")
 	// Calcul de la durée écoulée
 	duration := endTime.Sub(startTime)
 
 	// Affichage de la durée écoulée
-	fmt.Printf("Le temps d'exécution est : %v\n", duration)
+	fmt.Printf("Duree = %v, Code sortie = %v\n", duration, exitCode)
 }
